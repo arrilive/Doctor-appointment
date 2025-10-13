@@ -13,7 +13,10 @@
     <!-- Vite Assets -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Livewire -->
+    <!-- WireUI -->
+    <wireui:scripts />
+
+    <!-- Styles -->
     @livewireStyles
 
     <!-- FontAwesome -->
