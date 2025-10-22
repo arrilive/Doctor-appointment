@@ -26,10 +26,9 @@
     </ol>
     {{-- EL último item aparece como negritas --}}
     @if (count($breadcrumbs) > 1)
-        <h6 class="font-bold mt-2">
-            {{ end($breadcrumbs)['name'] }}
+        <h6 class="font-bold mt-2" style="font-weight: 700 !important;">
+           {{ end($breadcrumbs)['name'] }}
         </h6>
     @endif
  </nav>
 @endif
-    
