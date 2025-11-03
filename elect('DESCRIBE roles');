@@ -1,0 +1,33 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6714
+    [34mall[39m: [
+      [34;4mApp\Models\Role[39;24m {#7132
+        [34mid[39m: [35m1[39m,
+        [34mname[39m: "[32mPaciente[39m",
+        [34mguard_name[39m: "[32mweb[39m",
+        [34mcreated_at[39m: "[32m2025-10-20 15:57:08[39m",
+        [34mupdated_at[39m: "[32m2025-10-20 15:57:08[39m",
+      },
+      [34;4mApp\Models\Role[39;24m {#7131
+        [34mid[39m: [35m2[39m,
+        [34mname[39m: "[32mDoctor[39m",
+        [34mguard_name[39m: "[32mweb[39m",
+        [34mcreated_at[39m: "[32m2025-10-20 15:57:08[39m",
+        [34mupdated_at[39m: "[32m2025-10-20 15:57:08[39m",
+      },
+      [34;4mApp\Models\Role[39;24m {#7130
+        [34mid[39m: [35m3[39m,
+        [34mname[39m: "[32mRecepcionista[39m",
+        [34mguard_name[39m: "[32mweb[39m",
+        [34mcreated_at[39m: "[32m2025-10-20 15:57:08[39m",
+        [34mupdated_at[39m: "[32m2025-10-20 15:57:08[39m",
+      },
+      [34;4mApp\Models\Role[39;24m {#7129
+        [34mid[39m: [35m4[39m,
+        [34mname[39m: "[32mAdministrador[39m",
+        [34mguard_name[39m: "[32mweb[39m",
+        [34mcreated_at[39m: "[32m2025-10-20 15:57:08[39m",
+        [34mupdated_at[39m: "[32m2025-10-20 15:57:08[39m",
+      },
+    ],
+  }
+
