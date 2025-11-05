@@ -42,5 +42,7 @@
     @stack('modals')
 
     @livewireScripts
+    {{-- Necesario para laravellivewiretable($wire) y helpers del paquete --}}
+    <x-livewire-tables::scripts />
 </body>
 </html>

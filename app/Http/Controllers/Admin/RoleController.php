@@ -20,7 +20,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.roles.create');
     }
 
     /**
@@ -28,7 +28,23 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validar que se cree correctamente
+        $request->validate(['name'=> 'required|unique:roles,name']);
+
+        //Si pasa la validación, crear el rol
+        Role::create(['name' => $request->name]);
+
+        //Variable de un sólo uso para alerta
+        session()->flash('swal',
+        [
+            'icon' => 'succes',
+            'title' => 'Rol creado correctamente',
+            'text' => 'El rol ha sido creado exitosamente'
+        ]);
+
+        //Redicciona a la página principal si se creó el rol
+        return redirect()->route('admin.roles.index')
+        ->with('succes', 'Role created succesully');
     }
 
     /**
@@ -44,7 +60,7 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return view('admin.roles.edit');
     }
 
     /**

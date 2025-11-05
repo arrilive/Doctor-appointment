@@ -2,25 +2,22 @@
 
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 class AdminLayout extends Component
 {
-    /**
-     * Create a new component instance.
-     */ 
-    public function __construct()
+    public string $title;
+    public array $breadcrumbs;
+
+    public function __construct(?string $title = null, array $breadcrumbs = [])
     {
-        //
+        $this->title = $title ?? config('app.name', 'Laravel');
+        $this->breadcrumbs = $breadcrumbs;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function render()
     {
-        return view('layouts.admin');
+        // Usa la vista del componente en resources/views/components/admin-layout.blade.php
+        return view('components.admin-layout');
     }
 }
