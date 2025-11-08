@@ -7,7 +7,7 @@
 >
   <x-slot name="actions">
     <a href="{{ route('admin.roles.create') }}"
-       class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700">
+       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-white">
       <i class="fa-solid fa-plus"></i>
       Nuevo
     </a>

@@ -14,7 +14,10 @@
   <script src="https://kit.fontawesome.com/9161014f5f.js" crossorigin="anonymous"></script>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  {{-- WireUI SIN Alpine para evitar duplicados --}}
+  {{-- SweetAlert2 --}}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  {{-- WireUI SIN Alpine (evita duplicados) --}}
   <wireui:scripts :alpine="false" />
 
   @livewireStyles
@@ -33,7 +36,7 @@
         @endif
       </div>
 
-      {{-- Slot de acciones (aquí aparece tu botón "Nuevo") --}}
+      {{-- Slot de acciones (botón "Nuevo", etc.) --}}
       <div class="flex items-center gap-2">
         {{ $actions ?? '' }}
       </div>
@@ -47,5 +50,17 @@
 
   @livewireScripts
   <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+  {{-- Disparar SweetAlert si hay flash "swal" --}}
+  @if (session('swal'))
+    <script>
+      window.addEventListener('load', () => {
+        Swal.fire(@json(session('swal')));
+      });
+    </script>
+  @endif
+
+  {{-- Deja este stack por si alguna vista quiere empujar scripts extras --}}
+  @stack('scripts')
 </body>
 </html>

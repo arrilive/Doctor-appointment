@@ -40,9 +40,9 @@
   <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
   {{-- Mostrar Sweet alert --}}
-  @if (@session('swal'))
+  @if (session()->has('swal'))
     <script>
-      Swal.fire(@json('swal'));
+      Swal.fire(@json(session('swal')));
     </script>
   @endif
 
