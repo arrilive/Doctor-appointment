@@ -46,5 +46,20 @@
     </script>
   @endif
 
+  <script>
+    //Busca todos los elementos de una clase especifíca
+    forms = document.querySelectorAll('.delete-form');
+    forms.forEach(form => {
+      //Se pone al pendiete de cualquier acción submit (modo chismoso)
+      form.addEventListener('submit', function(e){
+        //Evita que se envíe
+        e.preventDefault();
+        Swal.fire({
+          title: '¿Est'
+        })
+      })
+    });
+  </script>
+
 </body>
 </html>
