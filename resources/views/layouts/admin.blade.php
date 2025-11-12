@@ -47,17 +47,30 @@
   @endif
 
   <script>
-    //Busca todos los elementos de una clase especifíca
-    forms = document.querySelectorAll('.delete-form');
+    const forms = document.querySelectorAll('.delete-form');
+
     forms.forEach(form => {
-      //Se pone al pendiete de cualquier acción submit (modo chismoso)
-      form.addEventListener('submit', function(e){
-        //Evita que se envíe
+      form.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        const currentForm = this;
+
         Swal.fire({
-          title: '¿Est'
-        })
-      })
+          title: "¿Estás seguro?",
+          text: "No podrás revertir este cambio",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // AQUÍ AHORA SÍ SE ENVÍA AL CONTROLADOR
+            currentForm.submit();
+          }
+        });
+      });
     });
   </script>
 

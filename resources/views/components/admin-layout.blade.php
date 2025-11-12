@@ -51,14 +51,40 @@
   @livewireScripts
   <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
 
-  {{-- Disparar SweetAlert si hay flash "swal" --}}
-  @if (session('swal'))
+  {{-- Mostrar Sweet alert --}}
+  @if (session()->has('swal'))
     <script>
-      window.addEventListener('load', () => {
-        Swal.fire(@json(session('swal')));
-      });
+      Swal.fire(@json(session('swal')));
     </script>
   @endif
+
+  <script>
+    const forms = document.querySelectorAll('.delete-form');
+
+    forms.forEach(form => {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const currentForm = this;
+
+        Swal.fire({
+          title: "¿Estás seguro?",
+          text: "No podrás revertir este cambio",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // AQUÍ AHORA SÍ SE ENVÍA AL CONTROLADOR
+            currentForm.submit();
+          }
+        });
+      });
+    });
+  </script>
 
   {{-- Deja este stack por si alguna vista quiere empujar scripts extras --}}
   @stack('scripts')

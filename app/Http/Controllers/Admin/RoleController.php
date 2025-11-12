@@ -29,14 +29,22 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|unique:roles,name']);
-        Role::create(['name' => $request->name]);
-
-        return redirect()->route('admin.roles.index')->with('swal', [
-            'icon'  => 'success',
-            'title' => 'Rol creado correctamente',
-            'text'  => 'El rol ha sido creado exitosamente',
+        $request->validate([
+            'name' => 'required|unique:roles,name',
         ]);
+
+        // Si usas guards no estándar, añade: 'guard_name' => 'web'
+        Role::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('admin.roles.index')
+            ->with('swal', [
+                'icon'  => 'success',
+                'title' => 'Rol creado correctamente',
+                'text'  => 'El rol ha sido creado exitosamente',
+            ]);
     }
 
     /**
@@ -44,7 +52,7 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        return view('admin.roles.show', compact('role'));   
+        return view('admin.roles.show', compact('role'));
     }
 
     /**
@@ -54,27 +62,13 @@ class RoleController extends Controller
     {
         // Restringir la acción para los primeros 4 roles fijos
         if ($role->id <= 4) {
-            return redirect()->route('admin.roles.index')->with('swal', [
-                'icon'  => 'error',
-                'title' => 'Acción no permitida',
-                'text'  => 'Este rol no puede editarse.',
-            ]);
-        }
-
-        return view('admin.roles.edit', compact('role'));
-    
-
-         //Validar que se inserte bien
-         $request->validate(['name' => 'required|unique:roles,name,' . $role->id]);
-
-         // Si el campo no cambió, no actualizar
-         if ($role->name === $request->name) {
-            return redirect()->route('admin.roles.index')->with('swal', [
-                'icon'  => 'info',
-                'title' => 'Sin cambios',
-                'text'  => 'No puedes editar este rol.',
-            ]);
-            return redirect()->route('admin.roles.index');
+            return redirect()
+                ->route('admin.roles.index')
+                ->with('swal', [
+                    'icon'  => 'error',
+                    'title' => 'Acción no permitida',
+                    'text'  => 'Este rol no puede editarse.',
+                ]);
         }
 
         return view('admin.roles.edit', compact('role'));
@@ -85,27 +79,44 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
-        //Validar que se inserte bien
-         $request->validate(['name' => 'required|unique:roles,name,' . $role->id]);
-
-         // Si el campo no cambió, no actualizar
-        if ($role->name === $request->name) {
-            return redirect()->route('admin.roles.index')->with('swal', [
-                'icon'  => 'info',
-                'title' => 'Sin cambios',
-                'text'  => 'No se detectaron modificaciones.',
-            ]);
-            return redirect()->route('admin.roles.index');
+        // Opcional: impedir actualizar también estos roles
+        if ($role->id <= 4) {
+            return redirect()
+                ->route('admin.roles.index')
+                ->with('swal', [
+                    'icon'  => 'error',
+                    'title' => 'Acción no permitida',
+                    'text'  => 'Este rol no puede editarse.',
+                ]);
         }
 
-         //Si pasa la validación, editará el rol
-        $role->update(['name'=> $request->name]);
-
-        return redirect()->route('admin.roles.index', $role)->with('swal', [
-            'icon'  => 'success',
-            'title' => 'Rol actualizado correctamente',
-            'text'  => 'El rol ha sido actualizado exitosamente.',
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $role->id,
         ]);
+
+        // Si no cambió, avisar
+        if ($role->name === $request->name) {
+            return redirect()
+                ->route('admin.roles.index')
+                ->with('swal', [
+                    'icon'  => 'info',
+                    'title' => 'Sin cambios',
+                    'text'  => 'No se detectaron modificaciones.',
+                ]);
+        }
+
+        // Actualizar
+        $role->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()
+            ->route('admin.roles.index')
+            ->with('swal', [
+                'icon'  => 'success',
+                'title' => 'Rol actualizado correctamente',
+                'text'  => 'El rol ha sido actualizado exitosamente.',
+            ]);
     }
 
     /**
@@ -113,24 +124,25 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        //Restringir la acción para los primeros 4 roles fijos
-        if ($role->id <=4){
-            //Variable de un solo uso
-             return redirect()->route('admin.roles.index')->with('swal', [
-            'icon'  => 'error',
-            'title' => 'Acción no permitida',
-            'text'  => 'Este rol no puede eliminarse.',
-        ]);
+        // Restringir la acción para los primeros 4 roles fijos
+        if ($role->id <= 4) {
+            return redirect()
+                ->route('admin.roles.index')
+                ->with('swal', [
+                    'icon'  => 'error',
+                    'title' => 'Acción no permitida',
+                    'text'  => 'Este rol no puede eliminarse.',
+                ]);
         }
 
-        //Borrar elemento
         $role->delete();
 
-        //Alerta
-        return redirect()->route('admin.roles.index')->with('swal', [
-            'icon'  => 'success',
-            'title' => 'Rol eliminado',
-            'text'  => 'El rol ha sido eliminado correctamente.',
-        ]);
+        return redirect()
+            ->route('admin.roles.index')
+            ->with('swal', [
+                'icon'  => 'success',
+                'title' => 'Rol eliminado',
+                'text'  => 'El rol ha sido eliminado correctamente.',
+            ]);
     }
 }
