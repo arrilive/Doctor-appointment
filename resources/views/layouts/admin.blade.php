@@ -66,7 +66,6 @@
           cancelButtonText: "Cancelar"
         }).then((result) => {
           if (result.isConfirmed) {
-            // AQUÍ AHORA SÍ SE ENVÍA AL CONTROLADOR
             currentForm.submit();
           }
         });
