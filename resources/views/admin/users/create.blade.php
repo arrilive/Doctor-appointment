@@ -9,38 +9,11 @@
     <x-wire-card>
         <form action="{{ route('admin.users.store') }}" method="POST">
             @csrf
+            <div class="space-y-4">
+                <x-wire-input name="name" label="Nombre" required :value="old('name')" placeholder="Nombre" autocomplete="name" />
 
-            <x-wire-input 
-                label="Nombre" 
-                name="name" 
-                placeholder="Nombre del usuario" 
-                value="{{ old('name') }}">
-            </x-wire-input>
-
-            <x-wire-input 
-                class="mt-4"
-                label="Correo electrónico" 
-                name="email" 
-                type="email"
-                placeholder="correo@ejemplo.com" 
-                value="{{ old('email') }}">
-            </x-wire-input>
-
-            <x-wire-input 
-                class="mt-4"
-                label="Contraseña" 
-                name="password" 
-                type="password"
-                placeholder="••••••••">
-            </x-wire-input>
-
-            <x-wire-input 
-                class="mt-4"
-                label="Confirmar contraseña" 
-                name="password_confirmation" 
-                type="password"
-                placeholder="••••••••">
-            </x-wire-input>
+                <x-wire-input name="email" label="Correo electrónico" required :value="old('email')" placeholder="correo@ejemplo.com" />
+           
 
             <div class="flex justify-end mt-4">
                 <x-wire-button type='submit' blue>Guardar</x-wire-button>

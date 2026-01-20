@@ -22,6 +22,7 @@ class UserController extends Controller
      */
     public function create()
     {
+        
         return view('admin.users.create');
     }
 
@@ -123,6 +124,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+
+        //No permitir que un usuario se elimine a sí mismo
+       if (auth()->id() === $user->id) {
+            abort(403, 'No puedes eliminar tu propio usuario.');
+        }
+        
         $user->delete();
 
         return redirect()
