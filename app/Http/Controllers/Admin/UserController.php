@@ -124,12 +124,16 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Regla 1: solo admins pueden eliminar usuarios
+        if (! auth()->user()->can('access-admin')) {
+            abort(403, 'No tienes permisos para eliminar usuarios.');
+        }
 
-        //No permitir que un usuario se elimine a sí mismo
-       if (auth()->id() === $user->id) {
+        // Regla 2: nadie puede eliminarse a sí mismo
+        if (auth()->id() === $user->id) {
             abort(403, 'No puedes eliminar tu propio usuario.');
         }
-        
+
         $user->delete();
 
         return redirect()
