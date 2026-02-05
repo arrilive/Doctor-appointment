@@ -1,0 +1,38 @@
+
+   INFO  Running migrations.  
+
+  2026_02_03_153434_create_blood_types_table .......................................................................................... 22.23ms DONE
+  2026_02_03_153931_create_patients_table .............................................................................................. 8.15ms DONE
+
+
+   INFO  Seeding database.  
+
+  Database\Seeders\RoleSeeder .............................................................................................................. RUNNING  
+  Database\Seeders\RoleSeeder ........................................................................................................... 26 ms DONE  
+
+  Database\Seeders\UserSeeder .............................................................................................................. RUNNING  
+
+   Illuminate\Database\UniqueConstraintViolationException 
+
+  SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'luis@example.com' for key 'users_email_unique' (Connection: mysql, SQL: insert into `users` (`email`, `name`, `password`, `id_number`, `phone`, `address`, `updated_at`, `created_at`) values (luis@example.com, Luis Vera, $2y$12$4O0Fkl4NV3/27hLmctaSPOOrkgIg2Vdgw.mlfPi0khmZyrXoxlzYK, 123456789, 7777777777, Calle 123, Gran Santa Fe, 2026-02-03 15:40:19, 2026-02-03 15:40:19))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:819
+    815▕         // message to include the bindings with SQL, which will make this exception a
+    816▕         // lot more helpful to the developer instead of just the database's errors.
+    817▕         catch (Exception $e) {
+    818▕             if ($this->isUniqueConstraintError($e)) {
+  ➜ 819▕                 throw new UniqueConstraintViolationException(
+    820▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    821▕                 );
+    822▕             }
+    823▕
+
+      [2m+21 vendor frames [22m
+
+  22  database/seeders/UserSeeder.php:17
+      Illuminate\Database\Eloquent\Model::__callStatic()
+      [2m+8 vendor frames [22m
+
+  31  database/seeders/DatabaseSeeder.php:17
+      Illuminate\Database\Seeder::call()
+

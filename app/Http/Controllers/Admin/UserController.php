@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Patient;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -22,8 +24,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        
-        return view('admin.users.create');
+        $roles = Role::all();
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
@@ -31,27 +33,42 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Validación básica
+        // Validación completa
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed', // password_confirmation
+            'password' => 'required|string|min:8|confirmed',
+            'role_id'  => 'required|exists:roles,id',
+            'id_number' => 'nullable|string|max:50',
+            'phone'    => 'nullable|string|max:20',
+            'address'  => 'nullable|string|max:255',
         ]);
 
-        // Como en tu modelo el password está casteado como 'hashed',
-        // no necesitamos llamar a bcrypt: Laravel lo hace solo.
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => $request->password,
+        // Crear el usuario
+        $user = User::create([
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'password'  => $request->password,
+            'id_number' => $request->id_number,
+            'phone'     => $request->phone,
+            'address'   => $request->address,
         ]);
+
+        // Asignar el rol seleccionado
+        $role = Role::findById($request->role_id);
+        $user->assignRole($role);
+
+        // Si el rol es 'Paciente', crear automáticamente el registro en la tabla patients
+        if ($role->name === 'Paciente') {
+            $user->patient()->create([]);
+        }
 
         return redirect()
             ->route('admin.users.index')
             ->with('swal', [
                 'icon'  => 'success',
                 'title' => 'Usuario creado correctamente',
-                'text'  => 'El usuario ha sido creado exitosamente',
+                'text'  => 'El usuario ha sido creado exitosamente con el rol ' . $role->name,
             ]);
     }
 
@@ -68,9 +85,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // En roles restringes id <= 4. Aquí lo dejamos libre,
-        // pero si quieres luego protegemos al usuario 1, etc.
-        return view('admin.users.edit', compact('user'));
+        $roles = Role::all();
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -79,17 +95,28 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'password'  => 'nullable|string|min:8|confirmed',
+            'role_id'   => 'required|exists:roles,id',
+            'id_number' => 'nullable|string|max:50',
+            'phone'     => 'nullable|string|max:20',
+            'address'   => 'nullable|string|max:255',
         ]);
 
-        // Detectar “sin cambios” como en roles (si no se manda password)
-        $sinCambiosNombre  = $user->name === $request->name;
-        $sinCambiosCorreo  = $user->email === $request->email;
-        $sinPasswordNueva  = !$request->filled('password');
+        // Detectar cambios
+        $rolActual = $user->roles->first()?->id;
+        $sinCambios = (
+            $user->name === $request->name &&
+            $user->email === $request->email &&
+            $user->id_number === $request->id_number &&
+            $user->phone === $request->phone &&
+            $user->address === $request->address &&
+            $rolActual == $request->role_id &&
+            !$request->filled('password')
+        );
 
-        if ($sinCambiosNombre && $sinCambiosCorreo && $sinPasswordNueva) {
+        if ($sinCambios) {
             return redirect()
                 ->route('admin.users.index')
                 ->with('swal', [
@@ -99,16 +126,31 @@ class UserController extends Controller
                 ]);
         }
 
+        // Preparar datos para actualizar
         $data = [
-            'name'  => $request->name,
-            'email' => $request->email,
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'id_number' => $request->id_number,
+            'phone'     => $request->phone,
+            'address'   => $request->address,
         ];
 
         if ($request->filled('password')) {
-            $data['password'] = $request->password; 
+            $data['password'] = $request->password;
         }
 
         $user->update($data);
+
+        // Actualizar rol si cambió
+        if ($rolActual != $request->role_id) {
+            $nuevoRol = Role::findById($request->role_id);
+            $user->syncRoles([$nuevoRol]);
+
+            // Si el nuevo rol es 'Paciente' y no tiene registro de paciente, crearlo
+            if ($nuevoRol->name === 'Paciente' && !$user->patient) {
+                $user->patient()->create([]);
+            }
+        }
 
         return redirect()
             ->route('admin.users.index')

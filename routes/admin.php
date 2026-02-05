@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RoleController; 
-use App\Http\Controllers\Admin\UserController; // 👈 importa UserController también
+use App\Http\Controllers\Admin\UserController; 
+use App\Http\Controllers\Admin\PatientController;
 
 // /admin/dashboard -> admin.dashboard
 Route::get('/dashboard', function () {
@@ -16,3 +17,6 @@ Route::resource('roles', RoleController::class)->names('roles');
 
 // /admin/users -> admin.users.*
 Route::resource('users', UserController::class)->names('users');
+
+// /admin/patients -> admin.patients.*
+Route::resource('patients', PatientController::class)->names('patients');
