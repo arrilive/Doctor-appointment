@@ -155,6 +155,7 @@ return [
     'uppercase'              => 'El campo :attribute debe estar en mayúscula.',
     'url'                    => 'El campo :attribute debe ser una URL válida.',
     'uuid'                   => 'El campo :attribute debe ser un UUID válido.',
+
     'attributes'             => [
         'address'                  => 'dirección',
         'affiliate_url'            => 'URL de afiliado',
@@ -281,5 +282,23 @@ return [
         'winner'                   => 'ganador',
         'work'                     => 'trabajo',
         'year'                     => 'año',
+        
+        // Atributos personalizados para pacientes
+        'blood_type_id'                  => 'tipo de sangre',
+        'allergies'                      => 'alergias conocidas',
+        'chronic_conditions'             => 'enfermedades crónicas',
+        'surgical_history'               => 'antecedentes quirúrgicos',
+        'family_history'                 => 'antecedentes familiares',
+        'observations'                   => 'observaciones',
+        'emergency_contact_name'         => 'nombre de contacto de emergencia',
+        'emergency_contact_phone'        => 'teléfono de contacto de emergencia',
+        'emergency_contact_relationship' => 'relación con el paciente',
+    ],
+
+    'custom' => [
+        'emergency_contact_phone' => [
+            'regex' => 'El formato del teléfono de contacto de emergencia no es válido. Debe ser (999) 999-9999.',
+            'size' => 'El teléfono de contacto de emergencia debe tener exactamente 14 caracteres.',
+        ],
     ],
 ];

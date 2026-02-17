@@ -12,7 +12,7 @@ class BloodTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        $bloodTypes = ['A-', 'A+', 'AB-', 'AB+','B-', 'B+', 'O-', 'O+'];
 
         foreach ($bloodTypes as $BloodType) {
             \App\Models\BloodType::firstOrCreate(['name' => $BloodType]);

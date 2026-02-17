@@ -19,4 +19,4 @@ Route::resource('roles', RoleController::class)->names('roles');
 Route::resource('users', UserController::class)->names('users');
 
 // /admin/patients -> admin.patients.*
-Route::resource('patients', PatientController::class)->names('patients');
+Route::resource('patients', PatientController::class)->except(['create', 'store'])->names('patients');

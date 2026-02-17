@@ -1,4 +1,4 @@
-<div class="flex items-center gap-2">
+<div class="flex items-center space-x-2">
     <x-wire-button href="{{ route('admin.patients.show', $patient) }}" secondary xs>
         <i class="fa-solid fa-eye"></i>
     </x-wire-button>

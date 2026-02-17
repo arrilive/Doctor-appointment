@@ -1,10 +1,38 @@
 <x-admin-layout
-    title="Usuarios | MediCitas"
+    title="Editar Usuario | MediCitas"
     :breadcrumbs="[
         ['name' => 'Dashboard', 'href' => route('admin.dashboard')],
         ['name' => 'Usuarios',  'href' => route('admin.users.index')],
         ['name' => 'Editar']
     ]">
+
+    @if($user->patient)
+        <x-wire-card class="mb-4">
+            <div class="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-start">
+                        <i class="fas fa-user-doctor text-blue-500 text-xl mt-1 me-3"></i>
+                        <div>
+                            <h3 class="text-sm font-bold text-blue-800">Este usuario es un paciente</h3>
+                            <p class="mt-1 text-sm text-blue-600">
+                                La información médica (tipo de sangre, alergias, contacto de emergencia, etc.) se gestiona en la ficha del paciente.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <x-wire-button primary sm href="{{ route('admin.patients.edit', $user->patient) }}">
+                            <i class="fa-solid fa-file-medical me-2"></i>
+                            Editar ficha de paciente
+                        </x-wire-button>
+                        <x-wire-button outline sm href="{{ route('admin.patients.show', $user->patient) }}" class="mt-2 sm:mt-0 sm:ms-2">
+                            <i class="fa-solid fa-eye me-2"></i>
+                            Ver ficha
+                        </x-wire-button>
+                    </div>
+                </div>
+            </div>
+        </x-wire-card>
+    @endif
 
     <x-wire-card>
         <form action="{{ route('admin.users.update', $user) }}" method="POST">
