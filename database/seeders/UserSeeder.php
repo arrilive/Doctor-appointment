@@ -14,13 +14,18 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         //Crea un usuario de prueba cada que ejecuto migrations
-        User::firstOrCreate([
+        $doctor = User::firstOrCreate([
             'email' => 'luis@example.com',
             'name' => 'Luis Vera',
             'password' => bcrypt('12345678'),
             'id_number' => '123456789',
             'phone' => '7777777777',
             'address' => 'Calle 123, Gran Santa Fe',
-            ])->assignRole('Doctor');
+            ]);
+            
+        $doctor->assignRole('Doctor');
+        if (!$doctor->doctor) {
+            $doctor->doctor()->create();
+        }
     }
 }

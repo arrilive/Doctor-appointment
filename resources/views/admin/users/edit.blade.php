@@ -65,7 +65,10 @@
                     <x-wire-input
                         label="Número de Identificación"
                         name="id_number"
-                        placeholder="DNI, Cédula, etc."
+                        minlength="8"
+                        maxlength="20"
+                        title="El número de identificación debe tener entre 8 y 20 caracteres"
+                        placeholder="Entre 8 y 20 caracteres"
                         value="{{ old('id_number', $user->id_number) }}">
                     </x-wire-input>
                 </div>
@@ -74,7 +77,12 @@
                     <x-wire-input
                         label="Teléfono"
                         name="phone"
-                        placeholder="+1234567890"
+                        type="number"
+                        pattern="[0-9]{10}"
+                        minlength="10"
+                        maxlength="10"
+                        placeholder="Exactamente 10 dígitos"
+                        title="El número de teléfono debe ser de exactamente 10 dígitos"
                         value="{{ old('phone', $user->phone) }}">
                     </x-wire-input>
                 </div>
@@ -84,6 +92,7 @@
                 <x-wire-input
                     label="Dirección"
                     name="address"
+                    maxlength="500"
                     placeholder="Dirección completa"
                     value="{{ old('address', $user->address) }}">
                 </x-wire-input>

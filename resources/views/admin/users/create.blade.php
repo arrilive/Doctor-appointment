@@ -64,16 +64,24 @@
                     <x-wire-input
                         name="id_number"
                         label="Número de Identificación"
+                        minlength="8"
+                        maxlength="20"
+                        title="El número de identificación debe tener entre 8 y 20 caracteres"
                         :value="old('id_number')"
-                        placeholder="DNI, Cédula, etc." />
+                        placeholder="Entre 8 y 20 caracteres" />
                 </div>
 
                 <div>
                     <x-wire-input
                         name="phone"
                         label="Teléfono"
-                        :value="old('phone')"
-                        placeholder="+1234567890" />
+                        type="number"
+                        pattern="[0-9]{10}"
+                        minlength="10"
+                        maxlength="10"
+                        placeholder="Exactamente 10 dígitos"
+                        title="El número de teléfono debe ser de exactamente 10 dígitos"
+                        :value="old('phone')" />
                 </div>
             </div>
 
@@ -81,27 +89,28 @@
                 <x-wire-input
                     name="address"
                     label="Dirección"
+                    maxlength="500"
                     :value="old('address')"
                     placeholder="Dirección completa" />
             </div>
 
             <div class="mt-4">
-                <label for="role_id" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="role" class="block text-sm font-medium text-gray-700 mb-1">
                     Rol <span class="text-red-500">*</span>
                 </label>
                 <select
-                    name="role_id"
-                    id="role_id"
+                    name="role"
+                    id="role"
                     required
                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                     <option value="">Seleccione un rol...</option>
-                    @foreach(\Spatie\Permission\Models\Role::all() as $role)
-                        <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
-                            {{ $role->name }}
+                    @foreach($roles as $roleName)
+                        <option value="{{ $roleName }}" {{ old('role') == $roleName ? 'selected' : '' }}>
+                            {{ $roleName }}
                         </option>
                     @endforeach
                 </select>
-                @error('role_id')
+                @error('role')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

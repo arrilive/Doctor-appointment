@@ -65,18 +65,11 @@ class PatientController extends Controller
             $data['emergency_contact_phone'] = preg_replace('/[^0-9]/', '', $data['emergency_contact_phone']);
         }
 
-        // Detectar si hubo cambios reales comparando con los datos actuales
-        $hasChanges = false;
-        foreach ($data as $key => $value) {
-            if ($patient->{$key} != $value) {
-                $hasChanges = true;
-                break;
-            }
-        }
+        $patient->fill($data);
 
-        if (! $hasChanges) {
+        if (!$patient->isDirty()) {
             return redirect()
-                ->route('admin.patients.edit', $patient)
+                ->back()
                 ->with('swal', [
                     'icon'  => 'info',
                     'title' => 'Sin cambios',
@@ -84,7 +77,7 @@ class PatientController extends Controller
                 ]);
         }
 
-        $patient->update($data);
+        $patient->save();
 
         return redirect()
             ->route('admin.patients.edit', $patient)

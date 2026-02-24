@@ -30,4 +30,9 @@ class Patient extends Model
     {
         return $this->belongsTo(BloodType::class);
     }
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class);
+    }
 }

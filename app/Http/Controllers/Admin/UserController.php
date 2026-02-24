@@ -38,8 +38,8 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
-            'id_number' => 'required|string|unique:users,id_number|max:20',
-            'phone' => 'required|string|max:20',
+            'id_number' => 'required|string|min:8|max:20|unique:users,id_number',
+            'phone' => 'required|numeric|digits:10',
             'password' => 'required|string|min:8|confirmed',
             'address' => 'required|string|max:500',
             'role' => 'required|string|exists:roles,name',
@@ -71,6 +71,18 @@ class UserController extends Controller
                 ->with('swal', [
                     'title' => 'Paciente creado',
                     'text' => 'Complete la información médica del paciente.',
+                    'icon' => 'success',
+                ]);
+        }
+
+        // Si el rol es Doctor, crear registro en la tabla doctors (relación 1:1)
+        if ($validated['role'] === 'Doctor') {
+            $doctor = $user->doctor()->create([]);
+
+            return redirect()->route('admin.doctors.edit', $doctor)
+                ->with('swal', [
+                    'title' => 'Doctor creado',
+                    'text' => 'Complete la información del doctor.',
                     'icon' => 'success',
                 ]);
         }
@@ -112,8 +124,8 @@ class UserController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'id_number' => 'required|string|max:20|unique:users,id_number,' . $user->id,
-            'phone' => 'required|string|max:20',
+            'id_number' => 'required|string|min:8|max:20|unique:users,id_number,' . $user->id,
+            'phone' => 'required|numeric|digits:10',
             'address' => 'nullable|string|max:500',
             'role_id' => 'required|exists:roles,id',
         ];
@@ -134,9 +146,21 @@ class UserController extends Controller
             $user->password = bcrypt($validated['password']);
         }
 
-        $user->save();
-
         $role = Role::findById($validated['role_id']);
+        $roleChanged = !$user->hasRole($role->name);
+
+        logger()->info('Dirty fields: ', $user->getDirty());
+
+        if (!$user->isDirty() && !$roleChanged && !$request->filled('password')) {
+            session()->flash('swal', [
+                'icon' => 'info',
+                'title' => 'Sin cambios',
+                'text' => 'No se detectaron cambios en la información del usuario.',
+            ]);
+            return redirect()->back();
+        }
+
+        $user->save();
         $user->syncRoles([$role->name]);
 
         session()->flash('swal', [
@@ -145,7 +169,7 @@ class UserController extends Controller
             'text' => 'La información del usuario ha sido actualizada correctamente.',
         ]);
 
-        return redirect()->route('admin.users.edit', $user);
+        return redirect()->back();
     }
 
     /**
