@@ -38,6 +38,13 @@ $links= [
     'active' => request()->routeIs('admin.doctors.*'),
  ],
 
+ [
+    'name' => 'Soporte',
+    'icon' => 'fa-solid fa-headset',
+    'href' => route('admin.support-tickets.index'),
+    'active' => request()->routeIs('admin.support-tickets.*'),
+ ],
+
 ];
 @endphp
 

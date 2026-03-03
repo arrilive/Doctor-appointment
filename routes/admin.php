@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PatientController;
 
 use App\Http\Controllers\Admin\DoctorController;
+use App\Http\Controllers\Admin\SupportTicketController;
 
 // /admin/dashboard -> admin.dashboard
 Route::get('/dashboard', function () {
@@ -25,3 +26,8 @@ Route::resource('patients', PatientController::class)->except(['create', 'store'
 
 // /admin/doctors -> admin.doctors.*
 Route::resource('doctors', DoctorController::class)->except(['create', 'store'])->names('doctors');
+
+// /admin/support-tickets -> admin.support-tickets.*
+Route::resource('support-tickets', SupportTicketController::class)
+    ->only(['index', 'create', 'store', 'destroy'])
+    ->names('support-tickets');
