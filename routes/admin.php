@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\SupportTicketController;
 
+//Public routes
+
 // /admin/dashboard -> admin.dashboard
 Route::get('/dashboard', function () {
     // usa la vista que tengas; si no existe admin/dashboard.blade.php,
