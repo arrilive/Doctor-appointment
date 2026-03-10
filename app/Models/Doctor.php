@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\DoctorSchedule;
+use App\Models\Appointment;
 
 class Doctor extends Model
 {
@@ -21,5 +23,15 @@ class Doctor extends Model
     public function speciality()
     {
         return $this->belongsTo(Speciality::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(DoctorSchedule::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

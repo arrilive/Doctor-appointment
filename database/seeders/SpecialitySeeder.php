@@ -21,6 +21,7 @@ class SpecialitySeeder extends Seeder
             'Traumatología',
             'Oftalmología',
             'Psiquiatría',
+            'Veterinaria',
         ];
         foreach ($specialities as $speciality) {
             \App\Models\Speciality::firstOrCreate(['name' => $speciality]);
