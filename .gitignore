@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Debug/Scratch files
+test_dirty*.php
+test_tinker.php
+patch_doctor.php
+vendor-tree.txt
+fresh
+elect('DESCRIBE roles');
