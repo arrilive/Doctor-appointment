@@ -30,3 +30,7 @@ patch_doctor.php
 vendor-tree.txt
 fresh
 elect('DESCRIBE roles');
+*.txt
+test_output.txt
+tests_output.txt
+tests_whatsapp_output_v6.txt
