@@ -97,7 +97,22 @@ class AppointmentController extends Controller
             ]);
         }
 
-        Appointment::create($data);
+        $appointment = Appointment::create($data);
+
+        // Enviar confirmación por WhatsApp
+        try {
+            $whatsAppService = app(\App\Services\WhatsAppService::class);
+            $appointment->load(['patient.user', 'doctor.user']);
+            
+            $whatsAppService->sendConfirmation(
+                $appointment->patient->user->phone,
+                $appointment->appointment_date->format('d/m/Y'),
+                substr($appointment->start_time, 0, 5),
+                $appointment->doctor->user->name
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error al intentar disparar notificación de WhatsApp: " . $e->getMessage());
+        }
 
         return redirect()->route('admin.appointments.index')->with('swal', [
             'icon'  => 'success',

@@ -30,5 +30,9 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="TWILIO_SID" value="dummy_sid"/>
+        <env name="TWILIO_TOKEN" value="dummy_token"/>
+        <env name="TWILIO_WHATSAPP_FROM" value="1234567890"/>
+        <env name="TWILIO_WHATSAPP_TO" value="0987654321"/>
     </php>
 </phpunit>
