@@ -22,17 +22,14 @@ class WhatsAppService
 
     public function sendConfirmation(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
-        // El Sandbox exige plantillas preaprobadas para iniciar la conversación
-        // Usaremos la plantilla de Appointment Reminders
-        $variables = json_encode(["1" => $fecha, "2" => $hora]);
-        $this->sendTemplate($toPhone, 'HXb5b62575e6e4ff6129ad7c8efe1f983e', $variables);
+        $message = "✅ Cita confirmada para el {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡Te esperamos!";
+        $this->sendToPatient($toPhone, $message);
     }
 
     public function sendReminder(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
-        // Usamos la misma plantilla para el recordatorio
-        $variables = json_encode(["1" => $fecha, "2" => $hora]);
-        $this->sendTemplate($toPhone, 'HXb5b62575e6e4ff6129ad7c8efe1f983e', $variables);
+        $message = "⏰ Recordatorio: tienes cita mañana {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡No faltes!";
+        $this->sendToPatient($toPhone, $message);
     }
 
     public function sendDailySummary(array $appointments): void
@@ -50,47 +47,45 @@ class WhatsAppService
 
         $lines[] = "\nTotal: " . count($appointments) . " cita(s).";
 
-        // Aquí sí enviamos texto libre (body) suponiendo que el admin interactuó hace menos de 24h
         $clean = preg_replace('/[^0-9]/', '', $this->adminTo);
-        if (str_starts_with($clean, '521')) { $clean = substr($clean, 3); }
-        elseif (str_starts_with($clean, '52')) { $clean = substr($clean, 2); }
-        $to = 'whatsapp:+521' . $clean;
+        if (str_starts_with($clean, '52')) {
+            $clean = substr($clean, 2);
+        }
+        $to = 'whatsapp:+52' . $clean;
         
         $this->sendRawBody($to, implode("\n", $lines));
     }
 
     // ─── Privados ────────────────────────────────────────────────
 
-    protected function sendTemplate(string $toPhone, string $contentSid, string $contentVariables): void
+    protected function sendToPatient(string $toPhone, string $message): void
     {
         $clean = preg_replace('/[^0-9]/', '', $toPhone);
-        if (str_starts_with($clean, '521')) {
-            $clean = substr($clean, 3);
-        } elseif (str_starts_with($clean, '52')) {
-            $clean = substr($clean, 2);
+        
+        // STRICT REQUIREMENT: Output whatsapp:+529993623163 (NO +521)
+        if (str_starts_with($clean, '521')) { 
+            $clean = substr($clean, 3); 
+        } elseif (str_starts_with($clean, '52')) { 
+            $clean = substr($clean, 2); 
         }
-        $to = 'whatsapp:+521' . $clean;
-
-        try {
-            $client = new Client($this->sid, $this->token);
-            $client->messages->create($to, [
-                'from' => $this->from,
-                'contentSid' => $contentSid,
-                'contentVariables' => $contentVariables
-            ]);
-        } catch (\Exception $e) {
-            Log::error("Error enviando WhatsApp Template a {$to}: " . $e->getMessage());
-        }
+        
+        $to = 'whatsapp:+52' . $clean;
+        
+        $this->sendRawBody($to, $message);
     }
 
     protected function sendRawBody(string $to, string $message): void
     {
         try {
             $client = new Client($this->sid, $this->token);
-            $client->messages->create($to, [
+            // STRICT REQUIREMENT: Use ONLY body messages
+            $response = $client->messages->create($to, [
                 'from' => $this->from,
                 'body' => $message,
             ]);
+            
+            // STRICT REQUIREMENT: Add logging of Twilio message SID for debugging
+            Log::info("Twilio Message Delivered Successfully - SID: {$response->sid} - To: {$to}");
         } catch (\Exception $e) {
             Log::error("Error enviando WhatsApp (Body) a {$to}: " . $e->getMessage());
         }

@@ -77,6 +77,7 @@ it('command sends reminders only for tomorrow\'s programado appointments', funct
 
     $mock = Mockery::mock(WhatsAppService::class);
     $mock->shouldReceive('sendDailySummary')->once();
+    $mock->shouldReceive('sendReminder')->once();
     app()->instance(WhatsAppService::class, $mock);
 
     $this->artisan('appointments:send-reminders')
@@ -87,6 +88,7 @@ it('command sends reminders only for tomorrow\'s programado appointments', funct
 it('command outputs zero when no appointments tomorrow', function () {
     $mock = Mockery::mock(WhatsAppService::class);
     $mock->shouldReceive('sendDailySummary')->never();
+    $mock->shouldReceive('sendReminder')->never();
     app()->instance(WhatsAppService::class, $mock);
 
     $this->artisan('appointments:send-reminders')
@@ -105,6 +107,7 @@ it('command sends reminder with correct patient phone and doctor name', function
     ]);
 
     $mock = Mockery::mock(WhatsAppService::class);
+    $mock->shouldReceive('sendReminder')->once();
     $mock->shouldReceive('sendDailySummary')
         ->once()
         ->withArgs(function(array $summary) {
