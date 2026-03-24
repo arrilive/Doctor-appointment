@@ -114,6 +114,14 @@ class AppointmentController extends Controller
             \Illuminate\Support\Facades\Log::error("Error al intentar disparar notificación de WhatsApp: " . $e->getMessage());
         }
 
+        // Send PDF and Email Notifications
+        try {
+            $reportingService = app(\App\Services\AppointmentReportingService::class);
+            $reportingService->sendAppointmentCreatedNotification($appointment);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error al enviar correo y PDF de cita: " . $e->getMessage());
+        }
+
         return redirect()->route('admin.appointments.index')->with('swal', [
             'icon'  => 'success',
             'title' => '¡Cita creada!',
