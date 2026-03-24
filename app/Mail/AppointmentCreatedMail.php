@@ -38,7 +38,7 @@ class AppointmentCreatedMail extends Mailable
     {
         $subject = $this->recipientType === 'doctor' 
             ? 'Nueva Cita Agendada: ' . $this->appointment->patient->user->name
-            : 'Appointment Confirmation';
+            : 'Confirmación de Cita';
 
         return new Envelope(
             subject: $subject,
@@ -67,7 +67,7 @@ class AppointmentCreatedMail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromData(fn () => $this->pdfContent, 'Cita_Medica.pdf')
+            Attachment::fromData(fn () => $this->pdfContent, 'Cita.pdf')
                 ->withMime('application/pdf'),
         ];
     }

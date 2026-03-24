@@ -41,10 +41,6 @@
             <th>Hora de fin:</th>
             <td>{{ \Carbon\Carbon::parse($appointment->end_time)->format('H:i') }}</td>
         </tr>
-        <tr>
-            <th>Estado:</th>
-            <td>{{ ucfirst($appointment->status) }}</td>
-        </tr>
         @if($appointment->notes)
         <tr>
             <th>Notas:</th>

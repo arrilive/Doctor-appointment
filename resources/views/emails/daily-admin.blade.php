@@ -48,7 +48,7 @@
                     </table>
                 @else
                     <div style="background-color: #fef3c7; color: #92400e; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 14px;">
-                        No appointments scheduled
+                        No hay citas programadas para hoy.
                     </div>
                 @endif
             @endforeach
