@@ -16,14 +16,19 @@ class TestableWhatsAppService extends WhatsAppService
     public string $capturedMessage = '';
     public ?\Exception $exceptionToThrow = null;
 
-    protected function sendRaw(string $to, string $message): void
+    protected function sendRawBody(string $to, string $message): void
     {
+        $clean = preg_replace('/[^0-9]/', '', $to);
+        if (str_starts_with($clean, '521')) { $clean = substr($clean, 3); }
+        elseif (str_starts_with($clean, '52')) { $clean = substr($clean, 2); }
+        $formattedTo = 'whatsapp:+52' . $clean;
+
         if ($this->exceptionToThrow) {
-            Log::error("Error enviando WhatsApp a {$to}: " . $this->exceptionToThrow->getMessage());
+            Log::error("Error enviando WhatsApp a {$formattedTo}: " . $this->exceptionToThrow->getMessage());
             return;
         }
 
-        $this->capturedTo = $to;
+        $this->capturedTo = $formattedTo;
         $this->capturedMessage = $message;
     }
 }

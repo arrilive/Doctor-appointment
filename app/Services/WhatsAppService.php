@@ -20,27 +20,18 @@ class WhatsAppService
         $this->adminTo  = 'whatsapp:' . env('TWILIO_WHATSAPP_TO');
     }
 
-    /**
-     * Confirmación al paciente — usa su teléfono de la DB.
-     */
     public function sendConfirmation(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
         $message = "✅ Cita confirmada para el {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡Te esperamos!";
         $this->sendToPatient($toPhone, $message);
     }
 
-    /**
-     * Recordatorio individual por paciente (para uso futuro o pruebas).
-     */
     public function sendReminder(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
         $message = "⏰ Recordatorio: tienes cita mañana {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡No faltes!";
         $this->sendToPatient($toPhone, $message);
     }
 
-    /**
-     * Resumen de TODAS las citas del día siguiente — va a tu número (admin).
-     */
     public function sendDailySummary(array $appointments): void
     {
         if (empty($appointments)) {
@@ -56,7 +47,13 @@ class WhatsAppService
 
         $lines[] = "\nTotal: " . count($appointments) . " cita(s).";
 
-        $this->sendRaw($this->adminTo, implode("\n", $lines));
+        $clean = preg_replace('/[^0-9]/', '', $this->adminTo);
+        if (str_starts_with($clean, '52')) {
+            $clean = substr($clean, 2);
+        }
+        $to = 'whatsapp:+52' . $clean;
+        
+        $this->sendRawBody($to, implode("\n", $lines));
     }
 
     // ─── Privados ────────────────────────────────────────────────
@@ -64,22 +61,33 @@ class WhatsAppService
     protected function sendToPatient(string $toPhone, string $message): void
     {
         $clean = preg_replace('/[^0-9]/', '', $toPhone);
-        if (str_starts_with($clean, '52')) {
-            $clean = substr($clean, 2);
+        
+        // STRICT REQUIREMENT: Output whatsapp:+529993623163 (NO +521)
+        if (str_starts_with($clean, '521')) { 
+            $clean = substr($clean, 3); 
+        } elseif (str_starts_with($clean, '52')) { 
+            $clean = substr($clean, 2); 
         }
-        $this->sendRaw('whatsapp:+52' . $clean, $message);
+        
+        $to = 'whatsapp:+52' . $clean;
+        
+        $this->sendRawBody($to, $message);
     }
 
-    protected function sendRaw(string $to, string $message): void
+    protected function sendRawBody(string $to, string $message): void
     {
         try {
             $client = new Client($this->sid, $this->token);
-            $client->messages->create($to, [
+            // STRICT REQUIREMENT: Use ONLY body messages
+            $response = $client->messages->create($to, [
                 'from' => $this->from,
                 'body' => $message,
             ]);
+            
+            // STRICT REQUIREMENT: Add logging of Twilio message SID for debugging
+            Log::info("Twilio Message Delivered Successfully - SID: {$response->sid} - To: {$to}");
         } catch (\Exception $e) {
-            Log::error("Error enviando WhatsApp a {$to}: " . $e->getMessage());
+            Log::error("Error enviando WhatsApp (Body) a {$to}: " . $e->getMessage());
         }
     }
 }

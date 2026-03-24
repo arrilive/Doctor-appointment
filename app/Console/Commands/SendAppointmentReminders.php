@@ -41,12 +41,27 @@ class SendAppointmentReminders extends Command
             return;
         }
 
-        // Armar array para el resumen
-        $summary = $appointments->map(fn($appt) => [
-            'hora'     => substr($appt->start_time, 0, 5),
-            'paciente' => $appt->patient->user->name,
-            'doctor'   => $appt->doctor->user->name,
-        ])->toArray();
+        // Armar array para el resumen y además enviar el recordatorio individual a cada paciente
+        $summary = [];
+        foreach ($appointments as $appt) {
+            $horaStr = substr($appt->start_time, 0, 5);
+            $fechaStr = $appt->appointment_date->format('d/m/Y');
+            
+            // Enviar a cada paciente
+            $whatsAppService->sendReminder(
+                $appt->patient->user->phone,
+                $fechaStr,
+                $horaStr,
+                $appt->doctor->user->name
+            );
+
+            // Guardar para el resumen del admin
+            $summary[] = [
+                'hora'     => $horaStr,
+                'paciente' => $appt->patient->user->name,
+                'doctor'   => $appt->doctor->user->name,
+            ];
+        }
 
         // Un solo mensaje resumen a tu WhatsApp
         $whatsAppService->sendDailySummary($summary);
