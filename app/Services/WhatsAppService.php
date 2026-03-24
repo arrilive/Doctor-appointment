@@ -20,27 +20,21 @@ class WhatsAppService
         $this->adminTo  = 'whatsapp:' . env('TWILIO_WHATSAPP_TO');
     }
 
-    /**
-     * Confirmación al paciente — usa su teléfono de la DB.
-     */
     public function sendConfirmation(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
-        $message = "✅ Cita confirmada para el {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡Te esperamos!";
-        $this->sendToPatient($toPhone, $message);
+        // El Sandbox exige plantillas preaprobadas para iniciar la conversación
+        // Usaremos la plantilla de Appointment Reminders
+        $variables = json_encode(["1" => $fecha, "2" => $hora]);
+        $this->sendTemplate($toPhone, 'HXb5b62575e6e4ff6129ad7c8efe1f983e', $variables);
     }
 
-    /**
-     * Recordatorio individual por paciente (para uso futuro o pruebas).
-     */
     public function sendReminder(string $toPhone, string $fecha, string $hora, string $doctorName): void
     {
-        $message = "⏰ Recordatorio: tienes cita mañana {$fecha} a las {$hora} con el Dr. {$doctorName}. ¡No faltes!";
-        $this->sendToPatient($toPhone, $message);
+        // Usamos la misma plantilla para el recordatorio
+        $variables = json_encode(["1" => $fecha, "2" => $hora]);
+        $this->sendTemplate($toPhone, 'HXb5b62575e6e4ff6129ad7c8efe1f983e', $variables);
     }
 
-    /**
-     * Resumen de TODAS las citas del día siguiente — va a tu número (admin).
-     */
     public function sendDailySummary(array $appointments): void
     {
         if (empty($appointments)) {
@@ -56,21 +50,40 @@ class WhatsAppService
 
         $lines[] = "\nTotal: " . count($appointments) . " cita(s).";
 
-        $this->sendRaw($this->adminTo, implode("\n", $lines));
+        // Aquí sí enviamos texto libre (body) suponiendo que el admin interactuó hace menos de 24h
+        $clean = preg_replace('/[^0-9]/', '', $this->adminTo);
+        if (str_starts_with($clean, '521')) { $clean = substr($clean, 3); }
+        elseif (str_starts_with($clean, '52')) { $clean = substr($clean, 2); }
+        $to = 'whatsapp:+521' . $clean;
+        
+        $this->sendRawBody($to, implode("\n", $lines));
     }
 
     // ─── Privados ────────────────────────────────────────────────
 
-    protected function sendToPatient(string $toPhone, string $message): void
+    protected function sendTemplate(string $toPhone, string $contentSid, string $contentVariables): void
     {
         $clean = preg_replace('/[^0-9]/', '', $toPhone);
-        if (str_starts_with($clean, '52')) {
+        if (str_starts_with($clean, '521')) {
+            $clean = substr($clean, 3);
+        } elseif (str_starts_with($clean, '52')) {
             $clean = substr($clean, 2);
         }
-        $this->sendRaw('whatsapp:+52' . $clean, $message);
+        $to = 'whatsapp:+521' . $clean;
+
+        try {
+            $client = new Client($this->sid, $this->token);
+            $client->messages->create($to, [
+                'from' => $this->from,
+                'contentSid' => $contentSid,
+                'contentVariables' => $contentVariables
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error enviando WhatsApp Template a {$to}: " . $e->getMessage());
+        }
     }
 
-    protected function sendRaw(string $to, string $message): void
+    protected function sendRawBody(string $to, string $message): void
     {
         try {
             $client = new Client($this->sid, $this->token);
@@ -79,7 +92,7 @@ class WhatsAppService
                 'body' => $message,
             ]);
         } catch (\Exception $e) {
-            Log::error("Error enviando WhatsApp a {$to}: " . $e->getMessage());
+            Log::error("Error enviando WhatsApp (Body) a {$to}: " . $e->getMessage());
         }
     }
 }
